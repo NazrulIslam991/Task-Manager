@@ -7,7 +7,7 @@ import 'package:task_manager/ui/widgets/background.dart';
 
 class Forgot_Password_Email_Screen extends StatefulWidget {
   const Forgot_Password_Email_Screen({super.key});
-  static const name = '/Forgot Password email screen';
+  static const name = '/forgot_password_email';
 
   @override
   State<Forgot_Password_Email_Screen> createState() =>
@@ -16,8 +16,8 @@ class Forgot_Password_Email_Screen extends StatefulWidget {
 
 class _Forgot_Password_Email_ScreenState
     extends State<Forgot_Password_Email_Screen> {
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  TextEditingController _emailEController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,75 +26,67 @@ class _Forgot_Password_Email_ScreenState
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Form(
-                key: _formkey,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 100),
+                    const SizedBox(height: 100),
                     Text(
                       "Your Email Address",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.only(right: 90),
                       child: Text(
-                        "A 6 digit verification pin will send to your email address",
+                        "A 6 digit verification pin will be sent to your email address",
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextFormField(
-                      decoration: InputDecoration(hintText: 'Email'),
-                      controller: _emailEController,
+                      controller: _emailController,
+                      decoration: const InputDecoration(hintText: 'Email'),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
-                        String email = value ?? '';
-                        if (EmailValidator.validate(email) == false) {
+                        if (value == null || !EmailValidator.validate(value)) {
                           return 'Enter a valid email';
                         }
                         return null;
                       },
                     ),
-                    SizedBox(height: 16),
-
+                    const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => emailValidation(),
-                      child: Icon(
+                      onPressed: _validateEmailAndProceed,
+                      child: const Icon(
                         Icons.arrow_circle_right_outlined,
                         color: Colors.white,
                       ),
                     ),
-
-                    SizedBox(height: 40),
-
+                    const SizedBox(height: 40),
                     Center(
-                      child: Column(
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              text: "Have account? ",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                                letterSpacing: 0.4,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Sign In',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = (() => Signin_page()),
-                                ),
-                              ],
-                            ),
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Have an account? ",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            letterSpacing: 0.4,
                           ),
-                        ],
+                          children: [
+                            TextSpan(
+                              text: 'Sign In',
+                              style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = _navigateToSignIn,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -107,20 +99,19 @@ class _Forgot_Password_Email_ScreenState
     );
   }
 
-  void emailValidation() {
-    if (_formkey.currentState!.validate()) {
+  void _validateEmailAndProceed() {
+    if (_formKey.currentState!.validate()) {
       Navigator.pushReplacementNamed(context, EmailVerificationPage.name);
     }
   }
 
-  void Signin_page() {
+  void _navigateToSignIn() {
     Navigator.pushReplacementNamed(context, SignIn_page.name);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _emailController.dispose();
     super.dispose();
-    _emailEController.dispose();
   }
 }

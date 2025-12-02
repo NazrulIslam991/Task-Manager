@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/data/models/user_model.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/urls.dart';
@@ -16,7 +17,7 @@ import '../widgets/circular_progress_indicatior.dart';
 class SignIn_page extends StatefulWidget {
   const SignIn_page({super.key});
 
-  static const name = 'Signin_name';
+  static const name = '/signin'; // <-- fixed
 
   @override
   State<SignIn_page> createState() => _SignIn_pageState();
@@ -46,9 +47,7 @@ class _SignIn_pageState extends State<SignIn_page> {
                       "Get Started With",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _emailEcontroller,
                       decoration: InputDecoration(hintText: "Email"),
@@ -62,14 +61,13 @@ class _SignIn_pageState extends State<SignIn_page> {
                         return null;
                       },
                     ),
-
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _passwordEcontroller,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(hintText: "Password"),
                       textInputAction: TextInputAction.done,
+                      obscureText: true,
                       validator: (value) {
                         if ((value?.length ?? 0) <= 6) {
                           return 'Enter a valid password';
@@ -77,9 +75,7 @@ class _SignIn_pageState extends State<SignIn_page> {
                         return null;
                       },
                     ),
-
                     SizedBox(height: 16),
-
                     Visibility(
                       visible: !_signinProgressIndicator,
                       replacement: CenterCircularProgressIndiacator(),
@@ -91,7 +87,6 @@ class _SignIn_pageState extends State<SignIn_page> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 40),
                     Center(
                       child: Column(
@@ -164,11 +159,8 @@ class _SignIn_pageState extends State<SignIn_page> {
 
       await AuthController.saveUserData(userModel, token);
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        NavbarScreen.name,
-        (predicate) => false,
-      );
+      // Navigate using GetX
+      Get.offAllNamed(NavbarScreen.name);
     } else {
       _signinProgressIndicator = false;
       setState(() {});
@@ -177,18 +169,19 @@ class _SignIn_pageState extends State<SignIn_page> {
   }
 
   void _onTapForgetPassword() {
-    Navigator.pushReplacementNamed(context, Forgot_Password_Email_Screen.name);
+    // Use GetX navigation
+    Get.offNamed(Forgot_Password_Email_Screen.name);
   }
 
   void _onTapSignUp() {
-    Navigator.pushReplacementNamed(context, SignUpPage.name);
+    // Use GetX navigation
+    Get.offNamed(SignUpPage.name);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _emailEcontroller.dispose();
     _passwordEcontroller.dispose();
+    super.dispose();
   }
 }

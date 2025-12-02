@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/urls.dart';
 import 'package:task_manager/ui/screens/sign_in_page.dart';
@@ -46,9 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       "Join With Us",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _emailEcontroller,
                       decoration: InputDecoration(hintText: "Email"),
@@ -56,21 +55,19 @@ class _SignUpPageState extends State<SignUpPage> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         String email = value ?? '';
-                        if (EmailValidator.validate(email) == false) {
+                        if (!EmailValidator.validate(email)) {
                           return 'Enter a valid email';
                         }
                         return null;
                       },
                     ),
-
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _fastNameEcontroller,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(hintText: "First Name"),
                       textInputAction: TextInputAction.done,
-                      validator: (String? value) {
+                      validator: (value) {
                         if (value?.trim().isEmpty ?? true) {
                           return 'Enter your first name';
                         }
@@ -78,28 +75,25 @@ class _SignUpPageState extends State<SignUpPage> {
                       },
                     ),
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _lastNameEcontroller,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(hintText: "Last Name"),
                       textInputAction: TextInputAction.done,
-                      validator: (String? value) {
+                      validator: (value) {
                         if (value?.trim().isEmpty ?? true) {
-                          return 'Enter your Last name';
+                          return 'Enter your last name';
                         }
                         return null;
                       },
                     ),
-
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _mobileEcontroller,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(hintText: "Mobile"),
                       textInputAction: TextInputAction.done,
-                      validator: (String? value) {
+                      validator: (value) {
                         if (value?.trim().isEmpty ?? true) {
                           return 'Enter your mobile number';
                         }
@@ -107,12 +101,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       },
                     ),
                     SizedBox(height: 20),
-
                     TextFormField(
                       controller: _passwordEcontroller,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(hintText: "Password"),
                       textInputAction: TextInputAction.done,
+                      obscureText: true,
                       validator: (value) {
                         if ((value?.length ?? 0) <= 6) {
                           return 'Enter a valid password';
@@ -120,9 +114,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         return null;
                       },
                     ),
-
                     SizedBox(height: 16),
-
                     Visibility(
                       visible: !_SignupInProgress,
                       replacement: CenterCircularProgressIndiacator(),
@@ -154,7 +146,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = (() => Signin_page()),
+                                    ..onTap = Signin_page,
                                 ),
                               ],
                             ),
@@ -213,17 +205,17 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void Signin_page() {
-    Navigator.pushReplacementNamed(context, SignIn_page.name);
+    // Use GetX navigation instead of Navigator
+    Get.offNamed(SignIn_page.name);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _emailEcontroller.dispose();
     _fastNameEcontroller.dispose();
     _lastNameEcontroller.dispose();
     _mobileEcontroller.dispose();
     _passwordEcontroller.dispose();
+    super.dispose();
   }
 }

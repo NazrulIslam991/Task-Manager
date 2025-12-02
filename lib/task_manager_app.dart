@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/ui/screens/add_new_task_screen.dart';
 import 'package:task_manager/ui/screens/email_verification_page.dart';
 import 'package:task_manager/ui/screens/forger_password_email_screen.dart';
@@ -12,12 +13,10 @@ import 'package:task_manager/ui/screens/update_profile_screen.dart';
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
 
-  static GlobalKey<NavigatorState> navigator = GlobalKey<NavigatorState>();
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      //navigatorKey: navigator,
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: TextTheme(
           titleLarge: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
@@ -51,20 +50,27 @@ class TaskManagerApp extends StatelessWidget {
           style: TextButton.styleFrom(foregroundColor: Colors.green),
         ),
       ),
-      initialRoute: '/',
-      routes: {
-        SplashScreen.name: (context) => SplashScreen(),
-        SignIn_page.name: (context) => SignIn_page(),
-        Forgot_Password_Email_Screen.name: (context) =>
-            Forgot_Password_Email_Screen(),
-        SignUpPage.name: (context) => SignUpPage(),
-        EmailVerificationPage.name: (context) => EmailVerificationPage(),
-        SetPasswordPage.name: (context) => SetPasswordPage(),
-        AddNewTaskScreen.name: (context) => AddNewTaskScreen(),
-        NavbarScreen.name: (context) => NavbarScreen(),
-        UpdateProfileScreen.name: (context) => UpdateProfileScreen(),
-      },
-      debugShowCheckedModeBanner: false,
+      initialRoute: SplashScreen.name,
+      getPages: [
+        GetPage(name: SplashScreen.name, page: () => SplashScreen()),
+        GetPage(name: SignIn_page.name, page: () => SignIn_page()),
+        GetPage(
+          name: Forgot_Password_Email_Screen.name,
+          page: () => Forgot_Password_Email_Screen(),
+        ),
+        GetPage(name: SignUpPage.name, page: () => SignUpPage()),
+        GetPage(
+          name: EmailVerificationPage.name,
+          page: () => EmailVerificationPage(),
+        ),
+        GetPage(name: SetPasswordPage.name, page: () => SetPasswordPage()),
+        GetPage(name: AddNewTaskScreen.name, page: () => AddNewTaskScreen()),
+        GetPage(name: NavbarScreen.name, page: () => NavbarScreen()),
+        GetPage(
+          name: UpdateProfileScreen.name,
+          page: () => UpdateProfileScreen(),
+        ),
+      ],
     );
   }
 }

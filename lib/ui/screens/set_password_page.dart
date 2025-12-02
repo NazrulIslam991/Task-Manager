@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/ui/screens/sign_in_page.dart';
 
 import '../widgets/background.dart';
@@ -31,12 +32,12 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 100),
+                    const SizedBox(height: 100),
                     Text(
                       "Set Password",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.only(right: 45),
                       child: Text(
@@ -44,11 +45,11 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     TextFormField(
                       controller: _passwordEC,
-                      decoration: InputDecoration(hintText: "Password"),
+                      decoration: const InputDecoration(hintText: "Password"),
                       textInputAction: TextInputAction.next,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -59,36 +60,39 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                       },
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     TextFormField(
                       controller: _confirmPasswordEC,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: InputDecoration(hintText: "Confrim Password"),
+                      decoration: const InputDecoration(hintText: "Confirm Password"),
                       textInputAction: TextInputAction.done,
                       validator: (value) {
                         if ((value?.length ?? 0) <= 6) {
                           return 'Enter a valid password';
                         }
+                        if (value != _passwordEC.text) {
+                          return 'Passwords do not match';
+                        }
                         return null;
                       },
                     ),
 
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     ElevatedButton(
-                      onPressed: () => Return_Signin_page(),
-                      child: Text("Confirm"),
+                      onPressed: () => _returnToSignInPage(),
+                      child: const Text("Confirm"),
                     ),
 
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     Center(
                       child: Column(
                         children: [
                           RichText(
                             text: TextSpan(
                               text: "Have account? ",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
                                 letterSpacing: 0.4,
@@ -96,12 +100,12 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                               children: [
                                 TextSpan(
                                   text: 'Sign In',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w700,
                                   ),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = (() => Return_Signin_page()),
+                                    ..onTap = _returnToSignInPage,
                                 ),
                               ],
                             ),
@@ -119,7 +123,15 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
     );
   }
 
-  void Return_Signin_page() {
-    Navigator.pushReplacementNamed(context, SignIn_page.name);
+  void _returnToSignInPage() {
+    // Use GetX navigation instead of Navigator
+    Get.offNamed(SignIn_page.name);
+  }
+
+  @override
+  void dispose() {
+    _passwordEC.dispose();
+    _confirmPasswordEC.dispose();
+    super.dispose();
   }
 }

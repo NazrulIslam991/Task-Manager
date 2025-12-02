@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/data/Models/task_model.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/urls.dart';
@@ -6,69 +7,69 @@ import 'package:task_manager/ui/widgets/circular_progress_indicatior.dart';
 import 'package:task_manager/ui/widgets/snake_bar_messege.dart';
 import 'package:task_manager/ui/widgets/task_card.dart';
 
-class ProgressTaskListScreen extends StatefulWidget {
-  const ProgressTaskListScreen({super.key});
+class ProgressTaskController extends GetxController {
+  var isLoading = false.obs;
+  var progressTaskList = <TaskModel>[].obs;
 
   @override
-  State<ProgressTaskListScreen> createState() => _ProgressTaskListScreenState();
+  void onInit() {
+    super.onInit();
+    getProgressTaskList();
+  }
+
+  Future<void> getProgressTaskList() async {
+    try {
+      isLoading.value = true;
+      NetworkResponse response = await NetworkCaller.getRequest(
+        url: Urls.getProgressTaskUrl,
+      );
+      isLoading.value = false;
+
+      if (response.isSuccess) {
+        List<TaskModel> list = [];
+        for (Map<String, dynamic> jsonData in response.body!['data']) {
+          list.add(TaskModel.fromJson(jsonData));
+        }
+        progressTaskList.value = list;
+      } else {
+        showSnackbarMessage(Get.context!, response.errorMessege!);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      showSnackbarMessage(Get.context!, e.toString());
+    }
+  }
 }
 
-class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
-  bool _getProgressTasksInProgress = false;
-  List<TaskModel> _ProgressTaskList = [];
+class ProgressTaskListScreen extends StatelessWidget {
+  ProgressTaskListScreen({super.key});
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getProgressTaskList();
-    });
-  }
+  final ProgressTaskController controller = Get.put(ProgressTaskController());
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Visibility(
-        visible: _getProgressTasksInProgress == false,
-        replacement: CenterCircularProgressIndiacator(),
-        child: ListView.builder(
-          itemCount: _ProgressTaskList.length,
-          itemBuilder: (context, index) {
-            return TaskCard(
-              taskType: TaskType.progress,
-              taskModel: _ProgressTaskList[index],
-              onStatusUpdate: () {
-                _getProgressTaskList();
-              },
-            );
-          },
-        ),
-      ),
+      child: Obx(() {
+        if (controller.isLoading.value) {
+          return CenterCircularProgressIndiacator();
+        } else if (controller.progressTaskList.isEmpty) {
+          return const Center(child: Text("No tasks in progress"));
+        } else {
+          return ListView.builder(
+            itemCount: controller.progressTaskList.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskType: TaskType.progress,
+                taskModel: controller.progressTaskList[index],
+                onStatusUpdate: () {
+                  controller.getProgressTaskList();
+                },
+              );
+            },
+          );
+        }
+      }),
     );
-  }
-
-  Future<void> _getProgressTaskList() async {
-    _getProgressTasksInProgress = true;
-    setState(() {});
-    NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.getProgressTaskUrl,
-    );
-
-    _getProgressTasksInProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body!['data']) {
-        list.add(TaskModel.fromJson(jsonData));
-      }
-      _ProgressTaskList = list;
-    } else {
-      showSnackbarMessage(context, response.errorMessege!);
-    }
-    _getProgressTasksInProgress = false;
-    setState(() {});
   }
 }

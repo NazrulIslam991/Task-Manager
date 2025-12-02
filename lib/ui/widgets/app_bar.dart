@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/ui/controller/auth_controller.dart';
 
 import '../screens/sign_in_page.dart';
@@ -11,7 +12,6 @@ class TM_appbar extends StatefulWidget implements PreferredSizeWidget {
   State<TM_appbar> createState() => _TM_appbarState();
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
@@ -51,7 +51,7 @@ class _TM_appbarState extends State<TM_appbar> {
             ),
           ),
           IconButton(
-            onPressed: () => _onTapLogOutButton(),
+            onPressed: _onTapLogOutButton,
             icon: Icon(Icons.logout),
             color: Colors.white,
           ),
@@ -62,18 +62,14 @@ class _TM_appbarState extends State<TM_appbar> {
 
   Future<void> _onTapLogOutButton() async {
     await AuthController.clearData();
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      SignIn_page.name,
-      (predicate) => false,
-    );
+    // Use GetX navigation instead of Navigator
+    Get.offAllNamed(SignIn_page.name);
   }
 
   void _onTapUpdateScreen() {
-    if (ModalRoute.of(context)!.settings.name == UpdateProfileScreen.name) {
-      return;
-    } else {
-      Navigator.pushNamed(context, UpdateProfileScreen.name);
-    }
+    if (Get.currentRoute == UpdateProfileScreen.name) return;
+
+    // Use GetX navigation instead of Navigator
+    Get.toNamed(UpdateProfileScreen.name);
   }
 }

@@ -17,7 +17,8 @@ class EmailVerificationPage extends StatefulWidget {
 
 class _EmailVerificationPageState extends State<EmailVerificationPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _otpEController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,28 +26,28 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(left: 55, right: 55),
+              padding: const EdgeInsets.symmetric(horizontal: 55),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 140),
+                    const SizedBox(height: 140),
                     Text(
                       "Pin Verification",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.only(right: 45),
                       child: Text(
-                        "A 6 digit verification pin will send to your email address",
+                        "A 6 digit verification pin will be sent to your email address",
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                    Container(
+                    SizedBox(
                       height: 60,
                       width: double.infinity,
                       child: PinCodeTextField(
@@ -63,52 +64,46 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                           selectedColor: Colors.green,
                           inactiveColor: Colors.grey,
                         ),
-                        animationDuration: Duration(milliseconds: 300),
+                        animationDuration: const Duration(milliseconds: 300),
                         backgroundColor: Colors.transparent,
                         enableActiveFill: true,
-                        controller: _otpEController,
+                        controller: _otpController,
                         onCompleted: (v) {
-                          print("Completed");
+                          print("OTP Completed: $v");
                         },
-
                         appContext: context,
                       ),
                     ),
-
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     ElevatedButton(
-                      onPressed: () => SetPassword(),
-                      child: Text("verify"),
+                      onPressed: _onVerifyPressed,
+                      child: const Text("Verify"),
                     ),
 
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
 
                     Center(
-                      child: Column(
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              text: "Have account? ",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                                letterSpacing: 0.4,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Sign Up',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = (() => SignUp()),
-                                ),
-                              ],
-                            ),
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Have an account? ",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            letterSpacing: 0.4,
                           ),
-                        ],
+                          children: [
+                            TextSpan(
+                              text: 'Sign Up',
+                              style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = _navigateToForgotPassword,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -121,11 +116,24 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     );
   }
 
-  void SignUp() {
+  void _navigateToForgotPassword() {
     Navigator.pushReplacementNamed(context, Forgot_Password_Email_Screen.name);
   }
 
-  void SetPassword() {
-    Navigator.pushReplacementNamed(context, SetPasswordPage.name);
+  void _onVerifyPressed() {
+    if (_otpController.text.length == 6) {
+      Navigator.pushReplacementNamed(context, SetPasswordPage.name);
+    } else {
+      // Optional: show a snackbar for invalid OTP
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid 6-digit OTP')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    super.dispose();
   }
 }
